@@ -79,7 +79,7 @@ objSDC <- createSdcObj(dat = fileRes, keyVars = selectedKeyVars, pramVars = pram
 
 #Apply PRAM
 set.seed(123)
-sdcObj <- pram(objSDC)
+objSDC <- pram(objSDC, pd=0.5)
 table(objSDC@pramVars)
 
 #Appply local suppression to gender, breadwinner and houshold_expenditure variables
