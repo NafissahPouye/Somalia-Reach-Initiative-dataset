@@ -1,12 +1,65 @@
 library(readxl)      #for excel, csv sheets manipulation
 library(sdcMicro)    #sdcMicro package with functions for the SDC process 
 library(tidyverse)   #for data cleaning
+#Somalia Joint Multi Cluster Needs Assessment Final dataset
 
 #Import data
-setwd("C:/Users/LENOVO T46OS/Desktop/SDC-Somalia-Reach-Initiative")
-file <- read_excel("C:/Users/LENOVO T46OS/Desktop/SDC-Somalia-Reach-Initiative/data.xlsx")
-                   
-#Somalia Joint Multi Cluster Needs Assessment Final Dataset - https://data.humdata.org/dataset/reach-somalia-joint-multi-cluster-needs-assessment-final-dataset
+setwd("C:/Users/LENOVO T46OS/Desktop/R scripts/SDC-Somalia-Reach-Initiative")
+file <- read_excel("C:/Users/LENOVO T46OS/Desktop/R scripts/SDC-Somalia-Reach-Initiative/data.xlsx")
+
+#Disclosure risk assessment
+#Select key variables
+selectedKeyVarsInitial <- c('region', 'district',  'settlement', 'settlement_other',
+                     'idp_settlement', 'idp_settlement_name', 'resp_gender', 
+                     'breadwinner', 'household_expenditure', 'hh_children',
+                     'school_age_male', 'school_age_female', 'total_children', 
+                     'disabled_chronic', 'sick_children', 'mental', 'note_vuln_gender',
+                     'disabled_chronic_male', 'disabled_chronic_female',
+                     'sick_boys_under5', 'sick_girls_under5', 'stress_boys',
+                     'stress_girls', 'stress_men', 'stress_women', 'region_idp',
+                     'district_idp', 'settlement_idp', 'settlement_idp_other',
+                     'returnee_country', 'returnee_country_other', 'returnee_area',
+                     'returnee_area_other', 'returnee_settlement', 
+                     'returnee_settlement_other', 'registered_return', 
+                     'refugee', 'country_origin', 'arrived_current', 
+                     'girls_harsh_work_type', 'boys_harsh_work_type',
+                     'not_safe_men_boys_where_other', 'not_safe_women_girls',
+                     'not_safe_women_girls_where')
+#Select key variables
+#Convert variables into factors
+factor_cols = c('resp_gender', 'resp_age', 'breadwinner',	'household_expenditure',
+                'males_0_6m',	'females_0_6m', 'males_6m_4y', 'females_6m_4y',
+                'males_5_12','females_5_12', 'males_13_15', 'females_13_15',
+                'males_16_17', 'females_16_17','males_18_40','females_18_40',
+                'males_41_59', 'females_41_59',	'males_60_over',
+               'females_60_over', 'total_hh', 'children_vaccine_age', 
+                'children_0_4','school_age_male','school_age_female',
+                'school_age_total', 'total_children', 'disabled_chronic',	
+                'sick_children', 'mental', 'note_vuln_gender',
+                'disabled_chronic_male', 'disabled_chronic_female',	
+                'sick_boys_under5',	'sick_girls_under5',	'stress_boys',
+                'stress_girls','stress_men','stress_women','region',
+                'district','settlement','settlement_other', 'idp_settlement_name', 
+                'returnee_country', 'returnee_country_other',	'returnee_area',
+                'returnee_area_other', 'returnee_settlement',
+                'returnee_settlement_other','registered_return',
+                'refugee', 'country_origin')
+file[,factor_cols] <- lapply(file[,factor_cols], factor)
+
+#Convert the sub file into dataframe
+fileResInitial<-data[,selectedKeyVarsInitial]
+fileResInitial <- as.data.frame(fileResInitial)
+
+#Assess the disclosure risk
+SdcObjInitial <- createSdcObj(dat = fileResInitial, keyVars = selectedKeyVarsInitial)
+
+#Disclosure risk assessment 
+print(SdcObjInitial, "risk")
+
+
+
+############## Anonymization process #################
+#select key variables
 selectedKeyVars <- c('idp_settlement',  'resp_gender',
                      'breadwinner',	'household_expenditure', 'hh_children',
                      'settlement_idp', 'arrived_current','girls_harsh_work_type',
@@ -31,42 +84,23 @@ selectedKeyVars <- c('idp_settlement',  'resp_gender',
                      'child_feeding_over6m','language_spoken', 'Target.Site')
 
 pramvars <-c('males_0_6m',	'females_0_6m', 'males_6m_4y', 'females_6m_4y',
-            'males_5_12','females_5_12', 'males_13_15', 'females_13_15',
-            'males_16_17', 'females_16_17','males_18_40','females_18_40',
-            'males_41_59', 'females_41_59',	'males_60_over',
-            'females_60_over', 'total_hh', 'children_vaccine_age', 'children_0_4',
-            'school_age_male','school_age_female', 'school_age_total', 'total_children', 
-            'disabled_chronic',	'sick_children', 'mental', 'note_vuln_gender',
-            'disabled_chronic_male', 'disabled_chronic_female',	
-            'sick_boys_under5',	'sick_girls_under5',	'stress_boys',
-            'stress_girls','stress_men','stress_women','region',
-            'district','settlement','settlement_other', 'idp_settlement_name', 
-            'returnee_country', 'returnee_country_other',	'returnee_area',
-            'returnee_area_other', 'returnee_settlement',
-            'returnee_settlement_other',	'registered_return',
-            'refugee',	'country_origin')
+             'males_5_12','females_5_12', 'males_13_15', 'females_13_15',
+             'males_16_17', 'females_16_17','males_18_40','females_18_40',
+             'males_41_59', 'females_41_59',	'males_60_over',
+             'females_60_over', 'total_hh', 'children_vaccine_age', 'children_0_4',
+             'school_age_male','school_age_female', 'school_age_total', 'total_children', 
+             'disabled_chronic',	'sick_children', 'mental', 'note_vuln_gender',
+             'disabled_chronic_male', 'disabled_chronic_female',	
+             'sick_boys_under5',	'sick_girls_under5',	'stress_boys',
+             'stress_girls','stress_men','stress_women','region',
+             'district','settlement','settlement_other', 'idp_settlement_name', 
+             'returnee_country', 'returnee_country_other',	'returnee_area',
+             'returnee_area_other', 'returnee_settlement',
+             'returnee_settlement_other',	'registered_return',
+             'refugee',	'country_origin')
 
-#Convert variables into factors
-factor_cols = c('resp_gender',	'resp_age', 'breadwinner',	'household_expenditure',
-                'males_0_6m',	'females_0_6m', 'males_6m_4y', 'females_6m_4y',
-                'males_5_12','females_5_12', 'males_13_15', 'females_13_15',
-                'males_16_17', 'females_16_17','males_18_40','females_18_40',
-                'males_41_59', 'females_41_59',	'males_60_over',
-                'females_60_over', 'total_hh', 'children_vaccine_age', 
-                'children_0_4','school_age_male','school_age_female',
-                'school_age_total', 'total_children', 'disabled_chronic',	
-                'sick_children', 'mental', 'note_vuln_gender',
-                'disabled_chronic_male', 'disabled_chronic_female',	
-                'sick_boys_under5',	'sick_girls_under5',	'stress_boys',
-                'stress_girls','stress_men','stress_women','region',
-                'district','settlement','settlement_other', 'idp_settlement_name', 
-                'returnee_country', 'returnee_country_other',	'returnee_area',
-                'returnee_area_other', 'returnee_settlement',
-                'returnee_settlement_other',	'registered_return',
-                'refugee',	'country_origin')
-file[,factor_cols] <- lapply(file[,factor_cols], factor)
 
-#Subset fil
+#Subset file
 subvars <- c('id', pramvars, selectedKeyVars)
 
 # Convert the sub file into dataframe
